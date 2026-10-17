@@ -165,7 +165,12 @@ Two versions were selected for the final submission:
 - **Score 833:** A more broadly optimized version that scored **831**, with an estimated ranking outside the Bronze tier.
 
 
-
+xychart-beta
+    title "Kaggle Leaderboard Score Across Iterations"
+    x-axis ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"]
+    y-axis "Leaderboard Score" 650 --> 920
+    line [722,701,675,762,733,699,774,804,763,785,826,794,814,765,820,820,741,900,877]
+    
 ## Failure Categories
 
 During development, the main issues fell into three categories:
