@@ -164,13 +164,14 @@ Two versions were selected for the final submission:
 - **Score 900:** The strongest targeted version, further refined by incorporating Articuno into the final configuration. The resulting variant scored **877**, achieving a Bronze-tier result.
 - **Score 833:** A more broadly optimized version that scored **831**, with an estimated ranking outside the Bronze tier.
 
-
+```mermaid
 xychart-beta
     title "Kaggle Leaderboard Scores Across Iterations"
     x-axis "Iteration" [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
     y-axis "Leaderboard Score" 650 --> 920
     line [722, 701, 675, 762, 733, 699, 774, 804, 763, 785, 826, 794, 814, 765, 820, 820, 741, 900, 763, 833, 820, 766]
-    
+ ```
+   
 ## Failure Categories
 
 During development, the main issues fell into three categories:
