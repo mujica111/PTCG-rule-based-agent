@@ -2,25 +2,46 @@
 
 A heuristic rule-based agent for Pokémon Trading Card Game battles, developed through replay analysis, matchup-specific strategy design, and iterative action scoring.
 
-
-**This project was independently developed over approximately one month, starting with only basic prior experience in Python.**
-
-**Kaggle result: 561 / 6,807 — Bronze Medal**
+This project was independently developed over approximately one month. **Kaggle result: 561 / 6,807 — Bronze Medal**
 
 
 The earliest working version was ranked at around **2,000th place**, and later iterations improved through matchup analysis, debugging, deck construction changes, and regression-aware refinement.
 
 
-
-
 ## Overview
 
-The agent evaluates all legal actions and assigns each action a heuristic score based on the current game state.
+The agent evaluates all legal actions and assigns each action a heuristic score based on the current game state and the action with the highest score will be chosen.
 
-Instead of using one fixed policy against every opponent, it detects common deck archetypes and adjusts its strategy accordingly.
+Instead of using a fixed policy against every opponent, it detects common deck archetypes and adjusts its strategy accordingly.
 
-The project went through roughly 20 iterations for both the Alakazam and Staryu/Starmie branches before the final version was selected.
+The project went through roughly 20 iterations for both the Alakazam deck and Staryu/Starmie deck before the final version was selected.
 
+## Strategy Development Workflow
+
+flowchart TD
+    A["Select Candidate Decks"] --> B["Evaluate Deck Strength<br/>and Suitability for Rule-Based Control"]
+    B --> C["Play Games Manually<br/>Understand the Deck Strategy"]
+    C --> D["Implement Initial Heuristic Rules"]
+    D --> E["Build V1 Agent"]
+    E --> F["Run Games and Review Replays"]
+    F --> G["Identify and Group Failure Cases"]
+    G --> H["Evaluate Potential Fixes"]
+
+    H --> I{"Worth Fixing?"}
+    I -->|Yes| J["Assess Compatibility,<br/>Complexity and Regression Risk"]
+    I -->|No| K["Accept or Strategically<br/>Deprioritize the Weakness"]
+
+    J --> L["Implement Selected Changes"]
+    K --> L
+    L --> M["Build Next Version"]
+    M --> N["Replay Analysis and Regression Testing"]
+    N --> O{"Further Improvement?"}
+
+    O -->|Yes| F
+    O -->|Near a Performance Plateau| P["Evaluate Multiple Historical Versions<br/>in the New Environment"]
+    P --> Q["Compare Robustness and Matchup Performance"]
+    Q --> R["Select the Best-Performing Version"]
+    R --> F
 
 
 ## Core Design
@@ -28,17 +49,14 @@ The project went through roughly 20 iterations for both the Alakazam and Staryu/
 The scoring system considers factors such as:
 
 - knockout opportunities
-- Prize-card value
+- Prize card value
 - HP and attached Energy
 - hand and deck size
 - resource preservation
-- bench threats
 - opponent archetype
 - future value of key cards
-
-The exact numerical scores are not intended to represent calibrated utilities. They mainly encode **relative strategic priorities**.
-
-For example, a guaranteed knockout receives a much higher priority than a normal setup action.
+- current bench pokemon
+- active pokemon
 
 ## Matchup-Specific Strategy
 
@@ -46,12 +64,10 @@ Different opponent archetypes can trigger different global policies.
 
 Examples include:
 
-- **Alakazam matchups:** limit unnecessary card draw to reduce deck-out risk.
-- **Crustle matchups:** preserve Hammer for higher-value future targets instead of using it immediately.
-- **Boss's Orders:** switch targets only when the expected tactical gain is sufficiently large.
-- **Weak matchups:** modify deck construction when changing action rules alone is not enough.
+- Alakazam matchups: limit unnecessary card draw to reduce deck-out risk. 
+- Crustle matchups: preserve Hammer for higher-value future targets instead of using it immediately
 
-The opponent deck is inferred from characteristic core cards. Since most ladder decks are built around one main archetype, this provides a practical classification method, although unusual mixed-core decks may occasionally be misclassified.
+The opponent deck is detected by characteristic core cards. Since all ladder decks are built around one main archetype, this provides a practical classification method, although unusual mixed-core decks may occasionally be misclassified (which is nearly impossible).
 
 Development mainly focuses on the most common ladder archetypes in order to control implementation complexity.
 
