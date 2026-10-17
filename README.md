@@ -78,7 +78,21 @@ Development mainly focuses on the most common ladder archetypes in order to cont
 
 ## Major Strategy Revision
 
-A major improvement came from three matchup-specific changes based on replay statistics and ladder sampling.
+A major improvement came from three major matchup-specific changes based on replay statistics and ladder sampling.
+
+### Bronze Ladder Meta Distribution (117 Matches)
+
+```mermaid
+pie showData
+    title Bronze Ladder Meta Distribution (117 Matches)
+    "Marnie's Grimmsnarl" : 33
+    "Alakazam" : 25
+    "Pecharunt" : 11
+    "Crustle" : 14
+    "Lucario" : 11
+    "Other" : 6
+```
+
 
 
 
