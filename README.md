@@ -18,6 +18,8 @@ The project went through roughly 20 iterations for both the Alakazam deck and St
 
 ## Strategy Development Workflow
 
+```mermaid
+
 flowchart TD
     A["Select Candidate Decks"] --> B["Evaluate Deck Strength<br/>and Suitability for Rule-Based Control"]
     B --> C["Play Games Manually<br/>Understand the Deck Strategy"]
