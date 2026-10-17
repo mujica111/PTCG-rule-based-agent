@@ -4,7 +4,6 @@ A heuristic rule-based agent for Pokémon Trading Card Game battles, developed t
 
 This project was independently developed over approximately one month. **Kaggle result: 561 / 6,807 — Bronze Medal**
 
-
 The earliest working version was ranked at around **2,000th place**, and later iterations improved through matchup analysis, debugging, deck construction changes, and regression-aware refinement.
 
 
@@ -14,7 +13,7 @@ The agent evaluates all legal actions and assigns each action a heuristic score 
 
 Instead of using a fixed policy against every opponent, it detects common deck archetypes and adjusts its strategy accordingly.
 
-The project went through roughly 20 iterations for both the Alakazam deck and Staryu/Starmie deck before the final version was selected.
+The project went through roughly 20 and 10 iterations for the Alakazam deck and Starmie deck respectively before the final version was selected.
 
 ## Strategy Development Workflow
 
@@ -49,6 +48,8 @@ flowchart LR
 
 ## Core Design
 
+The agent uses a priority-ordered rule system to select actions from the available legal moves. Decision rules are evaluated according to their priority, allowing the agent to respond to different game states without relying on a single fixed strategy.
+
 The scoring system considers factors such as:
 
 - knockout opportunities
@@ -78,147 +79,132 @@ Development mainly focuses on the most common ladder archetypes in order to cont
 
 ## Major Strategy Revision
 
-A major improvement came from three major matchup-specific changes based on replay statistics and ladder sampling.
-
-### Bronze Ladder Meta Distribution (117 Matches)
+Throughout iterative development, changes were primarily focused on improving matchups against the most prevalent archetypes in the meta.
 
 ```mermaid
 pie showData
-    title Bronze Ladder Meta Distribution (117 Matches)
+    title Bronze Ladder Meta Distribution (100 Matches)
     "Marnie's Grimmsnarl" : 33
     "Alakazam" : 25
-    "Pecharunt" : 11
+    "Ogerpon" : 11
     "Crustle" : 14
     "Lucario" : 11
     "Other" : 6
 ```
 
-
-
-
 ### Marnie Matchup
 
-Against similarly rated Marnie agents, the earlier version lost **9 of 10 sampled games**.
+Against similarly rated Marnie agents, earlier version lost 26/33 episodes. 
 
-Marnie decks also represented roughly **30% of a random Bronze-level ladder sample**, making this a high-priority weakness.
+Marnie decks also representing roughly 30% of a random Bronze-level ladder sample, making this a high-priority weakness.
 
-I therefore changed the deck construction to include **four copies of Battle Cage**.
+Therefore changed the deck construction to include four copies of Battle Cage, with some changes in rule. 
 
-After this change, the observed win rate against similarly rated Marnie opponents improved to approximately **50%**.
+After these changes, the observed win rate against similarly rated Marnie opponents improved to approximately 60% (15/24).
 
 
 
 ### Alakazam Matchup
 
-The original agent won fewer than **30%** of games against similarly rated Alakazam opponents.
+The initial agent won 9/25 against similarly rated Alakazam opponents. Several rule-based adjustments were introduced to address this weakness, but the improvements were limited and some changes reduced performance in previously favorable matchups.
 
-Adding Articuno as a targeted counter significantly improved performance against less mature Bronze-level Alakazam agents, with the observed win rate increasing to around **80%**.
+I then added one copy of Team Rocket's Articuno as a targeted counter to Alakazam decks. In testing against less experienced Bronze-level Alakazam agents, the observed win rate increased to approximately 80%.
 
-However, the same approach performed poorly against stronger Silver-level Alakazam agents, where the observed win rate fell below **10%**.
+However, performance did not generalize to stronger opponents: the observed win rate against stronger Silver-level Alakazam agents remained low, or even worse.
 
-This showed that a targeted counter could work well against one opponent population while failing to generalize to stronger agents.
-
-
-
-### X Machine Trade-off
-
-Higher-ranked Alakazam decks commonly used around three copies of X Machine to disrupt the opponent's hand.
-
-However, the rule-based agent had difficulty determining the optimal timing for using the card, so simply copying the high-ranked deck construction did not produce the same value.
-
-I therefore kept only **one copy of X Machine** rather than imitating stronger deck lists directly.
-
-After these three major changes, the leaderboard score increased from below **750 to approximately 910**, while the ranking improved from around **1,500th place to approximately 300th place at its peak**, temporarily entering the Silver-medal range.
+This result highlighted a limitation of matchup-specific optimization. A strategy that performs well against one opponent population may fail against stronger agents with different decision-making patterns.
 
 
 
-## Replay-Driven Iteration
+### Xerosic Machine Trade-off
 
-Most improvements came from manually reviewing losing or suspicious replays.
+Higher-ranked Alakazam decks often used approximately three copies of Xerosic's Machinations to disrupt the opponent's hand.
 
-A typical iteration followed:
+However, my rule-based agent struggled to determine when to use the card effectively. Simply adopting a similar deck configuration did not produce the expected benefits, as the agent's decision rules could not consistently exploit the card's strategic value.
 
-**Play → Inspect Replay → Identify Failure → Adjust Scoring or Rules → Retest**
-
-Common problems included:
-
-- illegal actions
-- API mismatches
-- missing edge cases
-- poor action priorities
-- premature resource usage
-- excessive draw
-- incorrect target selection
-- matchup-specific failures
-
-  
-
-### Debugging Example
-
-During development, an LLM strongly favored one interpretation of the API context, while observed behavior suggested that both `SelectContext.TO_FIELD` and `SelectContext.TO_BENCH` could be relevant.
-
-Instead of relying on the model's assumption, I handled both cases explicitly and verified the behavior through actual submissions and replay testing.
-
-This reinforced the importance of validating generated suggestions against real execution behavior and official API definitions.
+I therefore reduced the number of copies to one rather than directly imitating higher-ranked deck lists. This experiment reinforced the importance of designing deck construction around the capabilities of the decision-making system.
 
 
 
-## Regression Risk
+### Iterative Agent Development
 
-One of the most important lessons from the project was that solving one matchup could reduce performance in previously successful matchups.
+**Initial Exploration — Starmie Archetype**
 
-Because of this, new rules were not automatically added whenever a losing case appeared.
+I initially selected the Staryu/Starmie archetype because it appeared relatively straightforward to play manually. However, translating its strategy into a rule-based agent proved more difficult than expected.
 
-Their expected benefit was weighed against:
+The agent needed to evaluate damage across multiple Pokémon, determine whether combined damage could achieve a knockout, and allocate damage efficiently when a knockout was not immediately possible. These decisions depended heavily on the current board state and the interaction between multiple Pokémon, making them difficult to capture reliably through deterministic rules.
 
-- regression risk
-- implementation complexity
-- matchup frequency
-- interaction with existing rules
-- expected overall win-rate improvement
+After approximately 11 iterations involving deck construction and strategic adjustments, the leaderboard score remained around 700. I therefore shifted development toward the Alakazam archetype, which proved more promising for my rule-based approach.
 
-Some matchups were deliberately not fully optimized when the required changes introduced too much complexity or instability.
+**1. Bug Fixes and Baseline Improvements (722–804)**
 
-This highlighted the trade-off between **matchup-specific optimization and overall policy robustness**.
+Early iterations focused on identifying and fixing bugs in action selection and decision-making. Performance fluctuated as issues were progressively resolved.
+
+**2. Strategy Refinement Under a Stronger Meta (763–826)**
+
+Although scores did not improve consistently, the competitive environment became stronger as more capable agents emerged. Further debugging and experimentation with different rule-based strategies helped improve decision-making under increasingly challenging conditions.
+
+**3. Matchup-Specific Optimization (741–900)**
+
+Development shifted toward targeted matchup optimization against prevalent archetypes:
+
+- **765:** Initial rule-based adjustments targeting Alakazam decks, despite little improvements.
+- **820:** Preliminary matchup-specific rules extended to other major archetypes.
+- **741:** A regression caused by excessive matchup-specific rules and additional adjustments targeting Marnie's Grimmsnarl decks.
+- **900:** Focused optimization against Marnie's Grimmsnarl, including four copies of Battle Cage.
+- **763:** including three copies of Xerosic's Machinations with different new rules to deal with the Alkazam deck, but regression occurs.
+- **833:** One copy of team Rocket's Articuno is added to improve the Alakazam matchup. Slightly harmed the other matchups but greatly improved the Alakazam matchup.
+- **820:** Further changes in both deck and rule. Little effects are shown.
+- 820 and 766(Further refinements): Additional deck and rule changes failed to produce consistent improvements.
+
+### Final Agent Selection
+
+Two versions were selected for the final submission:
+
+- **Score 900:** The strongest targeted version, further refined by incorporating Articuno into the final configuration. The resulting variant scored **877**, achieving a Bronze-tier result.
+- **Score 833:** A more broadly optimized version that scored **831**, with an estimated ranking outside the Bronze tier.
 
 
 
-## Alternative Deck Experiments
+## Failure Categories
 
-A separate Staryu/Starmie branch was also developed.
+During development, the main issues fell into three categories:
 
-This showed that a deck that is strong for human players is not necessarily suitable for a deterministic heuristic agent.
+- **Implementation and API issues:** Incorrect code, API mismatches, illegal actions, and unhandled edge cases.
+- **Decision-making weaknesses:** Poor action priorities, premature resource usage, excessive card draw, and incorrect target selection.
+- **Matchup-specific weaknesses:** Strategies that performed poorly against particular archetypes or introduced regressions in previously favorable matchups.
 
-Some deck archetypes require highly context-dependent decisions, while others have clearer action priorities that are easier to represent through rule-based scoring.
-
-This distinction between **competitive strength and suitability for deterministic heuristics** influenced the final choice of the Alakazam-based branch.
+Distinguishing implementation bugs from strategic weaknesses helped determine whether a problem required a code fix, a change to the decision rules, or a trade-off that was not worth addressing.
 
 
+## Regression Risk and Rule Refinement
 
-## Results
+One of the most important lessons from the project was that fixing a weakness in one matchup could reduce performance in others.
 
-| Version                        | Result                                |
-| ------------------------------ | ------------------------------------- |
-| Earliest working agent         | Around 2,000th place                  |
-| Before major matchup revisions | Around 1,500th place, score below 750 |
-| Peak intermediate version      | Around 300th place, score around 910  |
-| Final result                   | **561 / 6,807 — Kaggle Bronze Medal** |
+I therefore did not add a new rule every time a losing case appeared. Instead, I considered:
+- **Expected benefit:** How frequently the problem occurred and how much the change might improve performance.
+- **Implementation complexity:** Whether the proposed rule would make the decision system harder to maintain.
+- **Regression risk:** Whether the change could interfere with existing rules or harm previously favorable matchups.
+- **Matchup relevance:** Whether the targeted weakness was important enough to justify a specialized adjustment.
 
-The improvement did not come from a single major algorithmic change, but from repeated replay analysis, matchup-specific adaptation, debugging, deck construction changes, and regression-aware refinement.
+Important matchups were retested manually after selected changes, while Kaggle leaderboard results provided a broader performance reference.
+
+This approach helped balance targeted improvements against the complexity and robustness of the overall policy.
 
 
 
 ## Limitations
 
-The agent is heuristic and rule-based rather than reinforcement-learning based.
+The agent relies on manually designed decision rules rather than a learned policy. Its performance therefore depends on how well the rules represent the strategic value of actions across different game states.
 
-Its main limitations are:
+Its main limitations include:
 
-- manually designed scoring rules
-- dependence on known matchup patterns
-- increasing interaction between rules as the policy grows
-- limited generalization to unusual or unseen decks
-- difficulty using cards whose value depends heavily on precise timing
+- **Limited generalization:** Rules designed around common archetypes may not perform well against unfamiliar decks or stronger opponents with different strategies.
+- **State-dependent decision complexity:** Some decisions require evaluating interactions among multiple Pokémon, future turns, and competing resource priorities, which can be difficult to represent through deterministic rules.
+- **Accumulated decision errors:** Small weaknesses in individual decisions can compound over the course of a match.
+- **Limited adaptability:** Unlike a learned policy, the rule system does not automatically improve from additional gameplay; improvements require further analysis and manual changes to the rules.
+
+These limitations motivated the use of matchup analysis and iterative testing, while also revealing the difficulty of scaling a manually maintained rule system.
 
   
 
@@ -234,12 +220,14 @@ ptcg-rule-based-agent/
     └── staryu_agent.py
 ```
 
-`AlakazamV19.py` contains the final Alakazam-based agent.
+`AlakazamV19.py` contains the final Alakazam-based agent with 877 scores finally.
 
 The archive contains only representative milestones rather than every intermediate submission.
 
 ## Key Takeaway
 
-The project evolved from a relatively simple heuristic agent into a matchup-aware policy using opponent detection, state-dependent scoring, resource preservation, deck adaptation, and replay-driven regression testing.
+The project evolved from an initial heuristic agent into a matchup-aware decision system built around priority-ordered rules, opponent archetype detection, resource management, and iterative testing.
 
-The main lesson was not simply how to add more rules, but how to decide **which rules were actually worth adding, which deck structures were suitable for deterministic control, and when a local improvement harmed overall robustness**.
+The main challenge was not simply adding more rules, but determining which changes were worth implementing. Through repeated debugging, matchup analysis, and manual retesting, I learned that local improvements could introduce regressions elsewhere, and that increasingly complex rules did not necessarily lead to better overall performance.
+
+This project strengthened my understanding of heuristic decision-making, empirical evaluation, and the trade-off between targeted optimization and overall policy robustness.
