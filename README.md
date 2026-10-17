@@ -20,9 +20,9 @@ The project went through roughly 20 iterations for both the Alakazam deck and St
 
 ```mermaid
 
-flowchart TD
-    A["Select Candidate Decks"] --> B["Evaluate Deck Strength<br/>and Suitability for Rule-Based Control"]
-    B --> C["Play Games Manually<br/>Understand the Deck Strategy"]
+flowchart LR
+    A["Select Candidate Decks"] --> B["Evaluate Deck Strength and Suitability for Training"]
+    B --> C["Play Games to Understand the Deck Strategy"]
     C --> D["Implement Initial Heuristic Rules"]
     D --> E["Build V1 Agent"]
     E --> F["Run Games and Review Replays"]
@@ -30,11 +30,10 @@ flowchart TD
     G --> H["Evaluate Potential Fixes"]
 
     H --> I{"Worth Fixing?"}
-    I -->|Yes| J["Assess Compatibility,<br/>Complexity and Regression Risk"]
-    I -->|No| K["Accept or Strategically<br/>Deprioritize the Weakness"]
+    I -->|Yes| J["Assess Compatibility,Complexity and Regression Risk"]
+    I -->|No| K["Accept or Strategically Deprioritize the Weakness"]
 
     J --> L["Implement Selected Changes"]
-    K --> L
     L --> M["Build Next Version"]
     M --> N["Replay Analysis and Regression Testing"]
     N --> O{"Further Improvement?"}
