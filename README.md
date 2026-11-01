@@ -164,43 +164,25 @@ xychart-beta
    
 ## Failure Categories
 
-During development, the main issues fell into three categories:
-
 - **Implementation and API issues:** Incorrect code, API mismatches, illegal actions, and unhandled edge cases.
 - **Decision-making weaknesses:** Poor action priorities, premature resource usage, excessive card draw, and incorrect target selection.
 - **Matchup-specific weaknesses:** Strategies that performed poorly against particular archetypes or introduced regressions in previously favorable matchups.
 
-Distinguishing implementation bugs from strategic weaknesses helped determine whether a problem required a code fix, a change to the decision rules, or a trade-off that was not worth addressing.
-
 
 ## Regression Risk and Rule Refinement
 
-One of the most important lessons from the project was that fixing a weakness in one matchup could reduce performance in others.
-
-I therefore did not add a new rule every time a losing case appeared. Instead, I considered:
 - **Expected benefit:** How frequently the problem occurred and how much the change might improve performance.
 - **Implementation complexity:** Whether the proposed rule would make the decision system harder to maintain.
 - **Regression risk:** Whether the change could interfere with existing rules or harm previously favorable matchups.
 - **Matchup relevance:** Whether the targeted weakness was important enough to justify a specialized adjustment.
 
-Important matchups were retested manually after selected changes, while Kaggle leaderboard results provided a broader performance reference.
-
-This approach helped balance targeted improvements against the complexity and robustness of the overall policy.
-
-
-
 ## Limitations
-
-The agent relies on manually designed decision rules rather than a learned policy. Its performance therefore depends on how well the rules represent the strategic value of actions across different game states.
-
-Its main limitations include:
 
 - **Limited generalization:** Rules designed around common archetypes may not perform well against unfamiliar decks or stronger opponents with different strategies.
 - **State-dependent decision complexity:** Some decisions require evaluating interactions among multiple Pokémon, future turns, and competing resource priorities, which can be difficult to represent through deterministic rules.
 - **Accumulated decision errors:** Small weaknesses in individual decisions can compound over the course of a match.
 - **Limited adaptability:** Unlike a learned policy, the rule system does not automatically improve from additional gameplay; improvements require further analysis and manual changes to the rules.
 
-These limitations motivated the use of matchup analysis and iterative testing, while also revealing the difficulty of scaling a manually maintained rule system.
 
 ## Key Takeaway
 
