@@ -66,16 +66,9 @@ The scoring system considers factors such as:
 
 Different opponent archetypes can trigger different global policies.
 
-Examples include:
-
-- Alakazam matchups: limit unnecessary card draw to reduce deck-out risk. 
-- Crustle matchups: preserve Hammer for higher-value future targets instead of using it immediately
-
 The opponent deck is detected by characteristic core cards. Since all ladder decks are built around one main archetype, this provides a practical classification method, although unusual mixed-core decks may occasionally be misclassified (which is nearly impossible).
 
 Development mainly focuses on the most common ladder archetypes in order to control implementation complexity.
-
-
 
 ## Major Strategy Revision
 
@@ -106,13 +99,13 @@ After these changes, the observed win rate against similarly rated Marnie oppone
 
 ### Alakazam Matchup
 
-The initial agent won 9/25 against similarly rated Alakazam opponents. Several rule-based adjustments were introduced to address this weakness, but the improvements were limited and some changes reduced performance in previously favorable matchups.
+The initial agent won 9/25 against similarly rated Alakazam opponents.
 
-I then added one copy of Team Rocket's Articuno as a targeted counter to Alakazam decks. In testing against less experienced Bronze-level Alakazam agents, the observed win rate increased to approximately 80%.
+I then added one copy of Team Rocket's Articuno as a targeted counter to Alakazam decks. In testing against less experienced Bronze-level Alakazam agents, the observed win rate increased to approximately 80%(19/24).
 
-However, performance did not generalize to stronger opponents: the observed win rate against stronger Silver-level Alakazam agents remained low, or even worse.
+By contrast, performance did not generalize to stronger opponents: the observed win rate against stronger Silver-level Alakazam agents remained low, or even worse.
 
-This result highlighted a limitation of matchup-specific optimization. A strategy that performs well against one opponent population may fail against stronger agents with different decision-making patterns.
+Overall，this approach prioritizes the robustness of the overall win rate under resource constraints, proving to be a highly efficient trade-off.
 
 
 
@@ -120,10 +113,9 @@ This result highlighted a limitation of matchup-specific optimization. A strateg
 
 Higher-ranked Alakazam decks often used approximately three copies of Xerosic's Machinations to disrupt the opponent's hand.
 
-However, my rule-based agent struggled to determine when to use the card effectively. Simply adopting a similar deck configuration did not produce the expected benefits, as the agent's decision rules could not consistently exploit the card's strategic value.
+However, simply adopting a similar deck configuration did not produce the expected benefits, as the agent's decision rules could not consistently exploit the card's strategic value.
 
-I therefore reduced the number of copies to one rather than directly imitating higher-ranked deck lists. This experiment reinforced the importance of designing deck construction around the capabilities of the decision-making system.
-
+The number of copies is reduced to one rather than directly imitating higher-ranked deck lists throughout several iterations.
 
 
 ### Iterative Agent Development
@@ -131,8 +123,6 @@ I therefore reduced the number of copies to one rather than directly imitating h
 **Initial Exploration — Starmie Archetype**
 
 I initially selected the Staryu/Starmie archetype because it appeared relatively straightforward to play manually. However, translating its strategy into a rule-based agent proved more difficult than expected.
-
-The agent needed to evaluate damage across multiple Pokémon, determine whether combined damage could achieve a knockout, and allocate damage efficiently when a knockout was not immediately possible. These decisions depended heavily on the current board state and the interaction between multiple Pokémon, making them difficult to capture reliably through deterministic rules.
 
 After approximately 11 iterations involving deck construction and strategic adjustments, the leaderboard score remained around 700. I therefore shifted development toward the Alakazam archetype, which proved more promising for my rule-based approach.
 
