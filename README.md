@@ -151,7 +151,7 @@ Development shifted toward targeted matchup optimization against prevalent arche
 
 Two versions were selected for the final submission:
 
-- **Score 900:** The strongest targeted version, further refined by incorporating Articuno into the final configuration. The resulting variant scored **877**, achieving a Bronze-tier result.
+- **Score 900:** The strongest targeted version, further refined by incorporating Articuno into the final configuration. The resulting variant scored **877** with some flucations(+-50), achieving a Bronze-tier result.
 - **Score 833:** A more broadly optimized version that scored **831**, with an estimated ranking outside the Bronze tier.
 
 ```mermaid
@@ -201,24 +201,6 @@ Its main limitations include:
 - **Limited adaptability:** Unlike a learned policy, the rule system does not automatically improve from additional gameplay; improvements require further analysis and manual changes to the rules.
 
 These limitations motivated the use of matchup analysis and iterative testing, while also revealing the difficulty of scaling a manually maintained rule system.
-
-  
-
-## Repository Structure
-
-```text
-ptcg-rule-based-agent/
-├── README.md
-├── AlakazamV19.py
-├── deck.csv
-└── archive/
-    ├── v1_initial_agent.py
-    └── staryu_agent.py
-```
-
-`AlakazamV19.py` contains the final Alakazam-based agent with 877 scores finally.
-
-The archive contains only representative milestones rather than every intermediate submission.
 
 ## Key Takeaway
 
